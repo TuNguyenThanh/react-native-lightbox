@@ -63,7 +63,6 @@ export default class LightboxOverlay extends Component {
     renderHeader:    PropTypes.func,
     onOpen:          PropTypes.func,
     onClose:         PropTypes.func,
-    willClose:         PropTypes.func,
     swipeToDismiss:  PropTypes.bool,
   };
 
@@ -145,14 +144,10 @@ export default class LightboxOverlay extends Component {
     Animated.spring(
       this.state.openVal,
       { toValue: 1, ...this.props.springConfig }
-    ).start(() => {
-      this.setState({ isAnimating: false });
-      this.props.didOpen();
-    });
+    ).start(() => this.setState({ isAnimating: false }));
   }
 
   close = () => {
-    this.props.willClose();
     if(isIOS) {
       StatusBar.setHidden(false, 'fade');
     }
@@ -183,6 +178,7 @@ export default class LightboxOverlay extends Component {
       swipeToDismiss,
       origin,
       backgroundColor,
+      closeButtonStyle
     } = this.props;
 
     const {
@@ -220,7 +216,7 @@ export default class LightboxOverlay extends Component {
     const header = (<Animated.View style={[styles.header, lightboxOpacityStyle]}>{(renderHeader ?
       renderHeader(this.close) :
       (
-        <TouchableOpacity onPress={this.close}>
+        <TouchableOpacity onPress={this.close} style={closeButtonStyle}>
           <Text style={styles.closeButton}>×</Text>
         </TouchableOpacity>
       )
